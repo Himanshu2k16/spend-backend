@@ -1,0 +1,21 @@
+# Render Blueprint — deploy this backend with one click from the repo.
+# Render reads this file when you choose "New +" → "Blueprint".
+services:
+  - type: web
+    name: spend-backend
+    runtime: node
+    plan: free
+    healthCheckPath: /api/health
+    buildCommand: npm install && npx prisma db push --skip-generate && npx prisma generate && npm run build
+    startCommand: node dist/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false          # paste your Neon connection string in the dashboard
+      - key: JWT_SECRET
+        generateValue: true  # Render generates a strong secret automatically
+      - key: CLIENT_ORIGIN
+        sync: false          # your deployed frontend URL, e.g. https://spend.vercel.app
+      - key: COOKIE_SAMESITE
+        value: none          # frontend and API live on different domains

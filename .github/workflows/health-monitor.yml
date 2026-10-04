@@ -1,0 +1,23 @@
+# Health watchdog — pings the deployed API and fails loudly if it is down.
+#
+# NOTE: GitHub's scheduled workflows can be delayed by 10-30 minutes under
+# load, so this is a BACKUP monitor / alert, not the primary keep-alive.
+# For guaranteed 5-minute pings that keep the Render free instance awake,
+# use cron-job.org or UptimeRobot pointed at the same health URL.
+
+name: Health monitor
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: # allows manual "Run workflow" from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          curl -fsS --max-time 60 "${{ secrets.HEALTH_URL }}" \
+            && echo "API healthy" \
+            || (echo "::error::API health check FAILED" && exit 1)

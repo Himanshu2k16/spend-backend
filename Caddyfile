@@ -1,0 +1,5 @@
+# Auto-HTTPS reverse proxy — Caddy obtains and renews Let's Encrypt
+# certificates for $DOMAIN as long as that domain points at this server.
+{$DOMAIN} {
+	reverse_proxy {$API_ORIGIN}
+}
